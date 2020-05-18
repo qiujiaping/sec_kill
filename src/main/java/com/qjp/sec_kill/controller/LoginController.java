@@ -2,6 +2,7 @@ package com.qjp.sec_kill.controller;
 
 import com.qjp.sec_kill.redis.RedisService;
 import com.qjp.sec_kill.result.Result;
+import com.qjp.sec_kill.service.MiaoshaUserService;
 import com.qjp.sec_kill.service.UserService;
 import com.qjp.sec_kill.vo.LoginVo;
 import org.slf4j.Logger;
@@ -30,21 +31,21 @@ public class LoginController {
     @Autowired
     RedisService redisService;
     @Autowired
-    UserService userService;
+    MiaoshaUserService userService;
 
     @RequestMapping("/to_login")
     public String toLogin(){
         return "login";
     }
 
-//    @RequestMapping("/do_login")
-//    @ResponseBody
-//    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
-//        log.info(loginVo.toString());
-//        //登录
-//        userService.login(response, loginVo);
-//        return Result.success(true);
-//    }
+    @RequestMapping("/do_login")
+    @ResponseBody
+    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
+        log.info(loginVo.toString());
+        //登录
+        userService.login(response, loginVo);
+        return Result.success(true);
+    }
 
 
 }
