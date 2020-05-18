@@ -80,20 +80,18 @@ function doLogin(){
 	    	mobile:$("#mobile").val(),
 	    	password: password
 	    },
-	    success:function(data){
-	    	layer.closeAll();
-	    	if(data.code==0){
+        success:function(data){
+            /*layer.closeAll();*/
+            if(data.code == 0){
+                layer.msg("成功");
 
-	    	    layer.msg("成功")
-			}
-			else {
-                layer.msg(data);
-			}
-	    },
-	    error:function(){
-	    	layer.closeAll();
-
-	    }
+            }else{
+                layer.msg(data.msg);
+            }
+        },
+        error:function(){
+            layer.closeAll();
+        }
 	});
 }
 </script>

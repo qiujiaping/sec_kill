@@ -1,5 +1,10 @@
 package com.qjp.sec_kill.vo;
 
+import com.qjp.sec_kill.validator.isMobile;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * description: LoginVo
  * date: 2020/5/18 20:18
@@ -7,7 +12,14 @@ package com.qjp.sec_kill.vo;
  * version: 1.0
  */
 public class LoginVo {
+
+    @NotNull
+    @isMobile
     private String mobile;
+
+    @NotNull
+    @Length(min=32)
+    private String password;
 
     public String getMobile() {
         return mobile;
@@ -25,6 +37,6 @@ public class LoginVo {
         this.password = password;
     }
 
-    private String password;
+
 
 }

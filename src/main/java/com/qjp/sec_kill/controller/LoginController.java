@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -41,16 +40,11 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public Result<CodeMsg> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
+    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {//如果这里校验未通过则这里会抛异常
         log.info(loginVo.toString());
-        //登录
-        CodeMsg codemsg = userService.login(response, loginVo);
-        if(codemsg.getCode()==0){
-            return Result.success(codemsg);
-        }
-        else {
-            return Result.error(codemsg);
-        }
+        //登录,异常的话把异常交给全局异常处理器，这样写的话就更简洁
+        boolean flag = userService.login(response, loginVo);
+        return Result.success(true);
 
     }
 

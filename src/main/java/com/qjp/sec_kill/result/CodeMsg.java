@@ -7,6 +7,8 @@ public class CodeMsg {
     //通用的错误码
     public static CodeMsg SUCCESS = new CodeMsg(0, "success");
     public static CodeMsg SERVER_ERROR = new CodeMsg(500100, "服务端异常");
+
+    //绑定异常的信息类，加了%s是为了与捕获到的异常信息拼装起来
     public static CodeMsg BIND_ERROR = new CodeMsg(500101, "参数校验异常：%s");
     //登录模块 5002XX
     public static CodeMsg MOBILE_NOT_EXIST = new CodeMsg(500214, "手机号不存在");
@@ -42,6 +44,7 @@ public class CodeMsg {
         this.msg = msg;
     }
 
+    //参数绑定异常，把异常的信息作为参数传入到函数中拼装
     public CodeMsg fillArgs(Object... args) {
         int code = this.code;
         String message = String.format(this.msg, args);
