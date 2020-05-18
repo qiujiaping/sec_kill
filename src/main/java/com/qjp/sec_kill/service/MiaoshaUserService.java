@@ -8,6 +8,7 @@ import com.qjp.sec_kill.result.CodeMsg;
 import com.qjp.sec_kill.util.MD5Util;
 import com.qjp.sec_kill.vo.LoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * author: 雨夜微凉
  * version: 1.0
  */
+@Service
 public class MiaoshaUserService {
     @Autowired
     MiaoshaUserDao miaoshaUserDao;
