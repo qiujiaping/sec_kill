@@ -1,6 +1,7 @@
 package com.qjp.sec_kill.controller;
 
 import com.qjp.sec_kill.redis.RedisService;
+import com.qjp.sec_kill.result.CodeMsg;
 import com.qjp.sec_kill.result.Result;
 import com.qjp.sec_kill.service.MiaoshaUserService;
 import com.qjp.sec_kill.service.UserService;
@@ -40,11 +41,17 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
+    public Result<CodeMsg> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
         log.info(loginVo.toString());
         //登录
-        userService.login(response, loginVo);
-        return Result.success(true);
+        CodeMsg codemsg = userService.login(response, loginVo);
+        if(codemsg.getCode()==0){
+            return Result.success(codemsg);
+        }
+        else {
+            return Result.error(codemsg);
+        }
+
     }
 
 

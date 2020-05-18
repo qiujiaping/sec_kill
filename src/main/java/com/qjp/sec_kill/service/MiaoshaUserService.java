@@ -33,7 +33,7 @@ public class MiaoshaUserService {
     }
 
     //登录
-    public boolean login(HttpServletResponse response, LoginVo loginVo) {
+    public CodeMsg login(HttpServletResponse response, LoginVo loginVo) {
         //判断vo是否正常
         if(loginVo==null){
             throw new GlobalException(CodeMsg.SERVER_ERROR);
@@ -43,17 +43,19 @@ public class MiaoshaUserService {
         //通过id获得用户，判断用户是否存在
         MiaoshaUser user = getById(Long.valueOf(mobile));
         if(user==null){
-            throw  new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
+            return CodeMsg.MOBILE_NOT_EXIST;
         }
         //获得用户密码，验证密码
         String password2 = user.getPassword();//对第一次加密的密码再经一次加密的密码
         String salt = user.getSalt();
         String calpass = MD5Util.formPassToDBPass(password1, salt);
+        System.out.println(calpass);
+        System.out.println(password2);
         if(!calpass.equals(password2)){
-            throw new GlobalException(CodeMsg.PASSWORD_ERROR);
+            return CodeMsg.PASSWORD_ERROR;
         }
-
-        return true;
+        System.out.println("success! ");
+        return CodeMsg.SUCCESS;
 
 
 
