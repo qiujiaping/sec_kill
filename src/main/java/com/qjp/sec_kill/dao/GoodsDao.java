@@ -2,6 +2,7 @@ package com.qjp.sec_kill.dao;
 
 import com.qjp.sec_kill.vo.goodsVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -18,5 +19,6 @@ public interface GoodsDao {
     @Select("select g.* ,mg.stock_count, mg.start_date, mg.end_date,mg.seckill_price  from miaosha_goods mg left join goods g on mg.goods_id=g.id")
     public List<goodsVo> listGoodsVo();
 
-
+    @Select("select g.* ,mg.stock_count, mg.start_date, mg.end_date,mg.seckill_price  from miaosha_goods mg left join goods g on mg.goods_id=g.id where g.id=#{id}")
+    goodsVo getGoodsVoById(@Param("id") Long id);
 }

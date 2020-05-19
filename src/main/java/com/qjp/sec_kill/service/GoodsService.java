@@ -23,5 +23,8 @@ public class GoodsService{
     }
 
 
-
+    public goodsVo getGoodsVoById(Long id) {
+        goodsVo goodsvo=goodsDao.getGoodsVoById(id);
+        return goodsvo;
+    }
 }

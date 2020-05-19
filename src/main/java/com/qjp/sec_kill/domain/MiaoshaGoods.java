@@ -4,15 +4,16 @@ import java.util.Date;
 
 public class MiaoshaGoods {
 	private Long id;
-	private Long seckill_price;
+	private Long seckillprice;
 	private Long goodsId;
 
-	public Long getSeckill_price() {
-		return seckill_price;
+
+	public Long getSeckillprice() {
+		return seckillprice;
 	}
 
-	public void setSeckill_price(Long seckill_price) {
-		this.seckill_price = seckill_price;
+	public void setSeckillprice(Long seckillprice) {
+		this.seckillprice = seckillprice;
 	}
 
 	private Integer stockCount;
