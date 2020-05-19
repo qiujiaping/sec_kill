@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public Result<String> exceptionHandler(HttpServletRequest request, Exception e){
-
+        e.printStackTrace();
         //全局异常（用户不存在，密码不对等）
         if(e instanceof GlobalException){
             GlobalException ex = (GlobalException)e;

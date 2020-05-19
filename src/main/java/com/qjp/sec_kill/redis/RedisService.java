@@ -42,7 +42,7 @@ public class RedisService {
 			 if(str == null || str.length() <= 0) {
 				 return false;
 			 }
-			//生成真正的key   realKey=keyPrefix.getPrefix()=UserKey+id+key
+			//生成真正的key   如realKey=keyPrefix.getPrefix()=UserKey+id+key
 			 String realKey  = keyPrefix.getPrefix() + key;
 			 int seconds =  keyPrefix.expireSeconds();
 			 if(seconds <= 0) {
