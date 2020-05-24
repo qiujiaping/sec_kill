@@ -32,6 +32,7 @@ public class GoodsController {
         return "goods_list";
     }
 
+    //商品详情页
     @RequestMapping("to_detail/{id}")
     public String to_detail(Model model, MiaoshaUser miaoshaUser, @PathVariable("id")Long id){//为简化操作把参数的业务操作压缩到mvc框架处理，我们平时在方法参数里直接得到model和request，response就是这样的
 

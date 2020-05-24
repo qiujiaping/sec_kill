@@ -1,6 +1,7 @@
 package com.qjp.sec_kill.service;
 
 import com.qjp.sec_kill.dao.GoodsDao;
+import com.qjp.sec_kill.domain.MiaoshaGoods;
 import com.qjp.sec_kill.vo.goodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,11 @@ public class GoodsService{
     public goodsVo getGoodsVoById(Long id) {
         goodsVo goodsvo=goodsDao.getGoodsVoById(id);
         return goodsvo;
+    }
+
+    public void reduceStock(goodsVo goodsVo) {
+        MiaoshaGoods g = new MiaoshaGoods();
+        g.setGoodsId(goodsVo.getId());
+        goodsDao.reduceStock(g);
     }
 }

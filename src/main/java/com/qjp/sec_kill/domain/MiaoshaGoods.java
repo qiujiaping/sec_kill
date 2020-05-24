@@ -6,7 +6,9 @@ public class MiaoshaGoods {
 	private Long id;
 	private Long seckillprice;
 	private Long goodsId;
-
+	private Integer stockCount;
+	private Date startDate;
+	private Date endDate;
 
 	public Long getSeckillprice() {
 		return seckillprice;
@@ -16,9 +18,7 @@ public class MiaoshaGoods {
 		this.seckillprice = seckillprice;
 	}
 
-	private Integer stockCount;
-	private Date startDate;
-	private Date endDate;
+
 	public Long getId() {
 		return id;
 	}
