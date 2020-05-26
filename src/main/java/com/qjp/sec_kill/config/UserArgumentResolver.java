@@ -55,6 +55,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private String getCookieValue(HttpServletRequest request, String cookiNameToken) {
         Cookie[] cookies = request.getCookies();
+        //为了在压测工具的测试，不用首先登录（把cookie存放到响应当中），可以直接访问其他页面，设置这个判断
+        if(cookies==null){
+            return null;
+        }
         for (Cookie cookie:cookies
              ) {
             if(cookie.getName().equals(cookiNameToken)){

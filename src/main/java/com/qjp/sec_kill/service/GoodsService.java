@@ -34,4 +34,9 @@ public class GoodsService{
         g.setGoodsId(goodsVo.getId());
         goodsDao.reduceStock(g);
     }
+
+    public goodsVo getGoodsVoByGoodsId(long goodsId) {
+        return goodsDao.getGoodsVoById(goodsId);
+    }
+
 }

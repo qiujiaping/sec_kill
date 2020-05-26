@@ -32,9 +32,19 @@ public class MiaoshaUserService {
     public static final String COOKI_NAME_TOKEN = "token";
 
 
-    //通过id获得用户
+    //通过id获得用户（对象级缓存）
     public MiaoshaUser getById(Long id) {
-        return miaoshaUserDao.getById(id);
+        //取缓存(3：对象级缓存（细粒度的）2：url缓存，1：页面缓存)
+        MiaoshaUser user = redisService.get(MiaoshaUserKey.getById, ""+id, MiaoshaUser.class);
+        if(user != null) {
+            return user;
+        }
+        //取数据库
+        user = miaoshaUserDao.getById(id);
+        if(user != null) {
+            redisService.set(MiaoshaUserKey.getById, ""+id, user);
+        }
+        return user;
     }
 
     //登录
