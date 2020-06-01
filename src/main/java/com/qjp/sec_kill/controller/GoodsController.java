@@ -62,6 +62,7 @@ public class GoodsController {
         }
         List<goodsVo> goodsList = goodsService.listGoodsVo();
         model.addAttribute("goodsList", goodsList);
+        //手动渲染+渲染完毕后放到redis当中作页面缓存
         WebContext springWebContext = new WebContext(request,response,request.getServletContext(),request.getLocale(),model.asMap());
          html = thymeleafViewResolver.getTemplateEngine().process("goods_list", springWebContext);
          //页面缓存在redis当中

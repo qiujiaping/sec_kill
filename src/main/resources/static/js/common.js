@@ -8,6 +8,7 @@ var g_passsword_salt="123456789"
 // 获取url参数
 function g_getQueryString(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+
     var r = window.location.search.substr(1).match(reg);
     if(r != null) return unescape(r[2]);
     return null;

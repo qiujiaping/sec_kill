@@ -8,6 +8,7 @@ class SecKillApplicationTests {
 
     @Test
     void contextLoads() {
+        System.out.println(2020-82);
     }
 
 }

@@ -17,12 +17,12 @@ public class RedisService {
 	/**
 	 * 获取当个对象
 	 * */
-	public <T> T get(KeyPrefix prefix, String key,  Class<T> clazz) {
+	public <T> T get(KeyPrefix obj, String key,  Class<T> clazz) {
 		 Jedis jedis = null;
 		 try {
 			 jedis =  jedisPool.getResource();
 			 //生成真正的key
-			 String realKey  = prefix.getPrefix() + key;
+			 String realKey  = obj.getPrefix() + key;
 			 String  str = jedis.get(realKey);
 			 T t =  stringToBean(str, clazz);
 			 return t;
@@ -34,7 +34,7 @@ public class RedisService {
 	/**
 	 * 设置对象
 	 * */
-	public <T> boolean set(KeyPrefix keyPrefix, String key,  T value) {
+	public <T> boolean set(KeyPrefix obj, String key,  T value) {
 		 Jedis jedis = null;
 		 try {
 			 jedis =  jedisPool.getResource();
@@ -43,8 +43,8 @@ public class RedisService {
 				 return false;
 			 }
 			//生成真正的key   如realKey=keyPrefix.getPrefix()=UserKey+id+key
-			 String realKey  = keyPrefix.getPrefix() + key;
-			 int seconds =  keyPrefix.expireSeconds();
+			 String realKey  = obj.getPrefix() + key;
+			 int seconds =  obj.expireSeconds();
 			 if(seconds <= 0) {
 				 jedis.set(realKey, str);
 			 }else {

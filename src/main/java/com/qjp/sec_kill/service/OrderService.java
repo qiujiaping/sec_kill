@@ -4,6 +4,8 @@ import com.qjp.sec_kill.dao.OrderDao;
 import com.qjp.sec_kill.domain.MiaoshaOrder;
 import com.qjp.sec_kill.domain.MiaoshaUser;
 import com.qjp.sec_kill.domain.OrderInfo;
+import com.qjp.sec_kill.redis.OrderKey;
+import com.qjp.sec_kill.redis.RedisService;
 import com.qjp.sec_kill.vo.goodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +24,17 @@ public class OrderService {
 
     @Autowired
     OrderDao orderDao;
+
+    //查看订单是否秒杀到直接到缓存查不到数据库查（优化）
+    @Autowired
+    RedisService redisService;
+
+    //查看订单是否秒杀到直接到缓存查不到数据库
     public  MiaoshaOrder getMiaoshaOrderByUserIdGoodsId(Long userId, Long goodsId) {
-        return orderDao.getMiaoshaOrderByUserIdGoodsId(userId, goodsId);
+        MiaoshaOrder miaoshaOrder= redisService.get(OrderKey.getMiaoshaOrderByUserIdGoodsId,""+userId+"_"+goodsId,MiaoshaOrder.class);
+
+        return miaoshaOrder;
+//        return orderDao.getMiaoshaOrderByUserIdGoodsId(userId, goodsId);
     }
 
     //在数据库生成订单信息并返回，在数据库生成秒杀订单
@@ -45,6 +56,12 @@ public class OrderService {
         miaoshaOrder.setOrderId(orderId);
         miaoshaOrder.setUserId(user.getId());
         orderDao.insertMiaoshaOrder(miaoshaOrder);
+        redisService.set(OrderKey.getMiaoshaOrderByUserIdGoodsId,""+user.getId()+"_"+goods.getId(),miaoshaOrder);
+
         return orderInfo;
+    }
+
+    public OrderInfo getOrderById(long orderId) {
+        return  orderDao.getOrderById(orderId);
     }
 }
