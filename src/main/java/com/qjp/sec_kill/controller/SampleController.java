@@ -1,6 +1,7 @@
 package com.qjp.sec_kill.controller;
 
 import com.qjp.sec_kill.domain.User;
+import com.qjp.sec_kill.rabbitmq.MQsenders;
 import com.qjp.sec_kill.redis.RedisService;
 import com.qjp.sec_kill.redis.UserKey;
 import com.qjp.sec_kill.result.CodeMsg;
@@ -21,6 +22,8 @@ public class SampleController {
     UserService userService;
     @Autowired
     RedisService redisService;
+    @Autowired
+    MQsenders mQsenders;
 
 
     @RequestMapping("/hello")
@@ -47,6 +50,13 @@ public class SampleController {
         User user = userService.getById(1);
         return Result.success(user);
     }
+    @RequestMapping("/mq")
+    @ResponseBody
+    public Result<String> mq() {
+        mQsenders.send("hello QJP");
+        return Result.success("hello world");
+    }
+
     @RequestMapping("/db/get/{name}")
     @ResponseBody
     public Result<User> dbGetByName(@PathVariable("name") String name) {
