@@ -25,4 +25,8 @@ public class MQConfig {
     public Queue queue() {
         return new Queue(QUEUE, true);
     }
+    @Bean
+    public Queue queue2() {
+        return new Queue(MIAOSHA_QUEUE, true);
+    }
 }

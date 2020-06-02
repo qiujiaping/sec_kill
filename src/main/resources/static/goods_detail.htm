@@ -63,6 +63,52 @@
 </div>
 </body>
 <script>
+    //轮巡
+    function getMiaoshaResult(goodsId) {
+        //展示loading
+        g_showLoading();
+        $.ajax({
+            url:"/miaosha/result",
+            type:"GET",
+            data:{
+                goodsId:$("#goodsId").val(),
+            },
+            success:function(data){
+                if(data.code == 0){
+                    var result=data.data
+                    /*库存不足*/
+                    if(result<0){
+                        layer.msg("对不起，秒杀失败");
+                    }
+                    /*排队中，轮巡操作*/
+                    else if(result==0){//继续轮巡
+                        setTimeout(function () {
+                            getMiaoshaResult(goodsId);
+                        },50)
+
+                    }
+                    else {
+                        layer.confirm("恭喜你，秒杀成功，查看订单？",{btn:["确定","取消"]},
+                        function () {
+                            window.location.href="/order_detail.htm?orderId="+result;
+                        },
+                        function () {
+                            layer.closeAll();
+                        })
+                    }
+
+                }else{
+
+                    layer.msg(data.msg);
+                }
+            },
+            error:function(){
+                layer.msg("客户端请求有误");
+            }
+        });
+
+    }
+
     function doMiaosha(){
         $.ajax({
             url:"/miaosha/do_miaosha",
@@ -71,10 +117,12 @@
                 goodsId:$("#goodsId").val(),
             },
             success:function(data){
+                //秒杀成功才轮巡
                 if(data.code == 0){
-                    window.location.href="/order_detail.htm?orderId="+data.data.id;
+                    // window.location.href="/order_detail.htm?orderId="+data.data.id;
+                    // 客户端轮巡(异步秒杀，查看消息队列处理到哪一步)
+                    getMiaoshaResult($("#goodsId").val())
                 }else{
-
                     layer.msg(data.msg);
                 }
             },

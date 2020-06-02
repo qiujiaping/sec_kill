@@ -2,6 +2,7 @@ package com.qjp.sec_kill.rabbitmq;
 
 import com.qjp.sec_kill.domain.MiaoshaOrder;
 import com.qjp.sec_kill.domain.MiaoshaUser;
+import com.qjp.sec_kill.domain.OrderInfo;
 import com.qjp.sec_kill.redis.RedisService;
 import com.qjp.sec_kill.service.GoodsService;
 import com.qjp.sec_kill.service.MiaoshaService;
@@ -29,9 +30,30 @@ public class MQReceives {
     @Autowired
     MiaoshaService miaoshaService;
 
-    @RabbitListener(queues=MQConfig.QUEUE)
+
+    @RabbitListener(queues=MQConfig.MIAOSHA_QUEUE)
     public void receive(String message) {
-        log.info("receive message:"+message);
+        log.info("receive message:" + message);
+        MiaoshaMessage miaoshaMessage = RedisService.stringToBean(message, MiaoshaMessage.class);
+        MiaoshaUser user = miaoshaMessage.getUser();
+        long goodsId = miaoshaMessage.getGoodsId();
+        goodsVo goods = goodsService.getGoodsVoById(goodsId);
+        int stockCount = goods.getStockCount();
+        if(stockCount<=0){
+            return;
+        }
+        //判断是否秒杀到（其实可以不判断）
+        MiaoshaOrder isExist = orderService.getMiaoshaOrderByUserIdGoodsId(user.getId(), goodsId);
+        if(isExist!=null){return;}
+
+        //真正的秒杀
+        //3，减少库存，下订单，写入秒杀订单
+        OrderInfo orderInfo = miaoshaService.miaosha(user, goods);
+
+    }
+    //    @RabbitListener(queues=MQConfig.QUEUE)
+//    public void receive(String message) {
+//        log.info("receive message:"+message);
 //        MiaoshaMessage mm  = RedisService.stringToBean(message, MiaoshaMessage.class);
 //        MiaoshaUser user = mm.getUser();
 //        long goodsId = mm.getGoodsId();
@@ -48,5 +70,5 @@ public class MQReceives {
 //        }
 //        //减库存 下订单 写入秒杀订单
 //        miaoshaService.miaosha(user, goods);
-    }
+//    }
 }

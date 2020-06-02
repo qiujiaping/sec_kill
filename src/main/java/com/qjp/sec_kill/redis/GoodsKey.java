@@ -7,4 +7,5 @@ public class GoodsKey extends BasePrefix{
 	}
 	public static GoodsKey getGoodsList = new GoodsKey(60, "gl");//页面缓存，访问统一页面
 	public static GoodsKey getGoodsDetail = new GoodsKey(60, "gd");//url缓存，访问不同的页面，粒度稍微小
+	public static GoodsKey getMiaoshaGoodsStock= new GoodsKey(0, "gs");
 }

@@ -32,7 +32,7 @@ public class MiaoshaUserService {
     public static final String COOKI_NAME_TOKEN = "token";
 
 
-    //通过id获得用户（对象级缓存）
+    //通过id获得用户（对象级缓存）先从缓存中查若没有，从数据库查，
     public MiaoshaUser getById(Long id) {
         //取缓存(3：对象级缓存（细粒度的）2：url缓存，1：页面缓存)
         MiaoshaUser user = redisService.get(MiaoshaUserKey.getById, ""+id, MiaoshaUser.class);
@@ -77,6 +77,7 @@ public class MiaoshaUserService {
         return true;
     }
 
+    //
     private void addCookie(HttpServletResponse response,String token,MiaoshaUser user){
         boolean flag = redisService.set(MiaoshaUserKey.token, token, user);// className（MiaoshaUserKey/UserKey）+":" + prefix（tk/id/name）+key/token
         Cookie cookie = new Cookie(COOKI_NAME_TOKEN, token);
