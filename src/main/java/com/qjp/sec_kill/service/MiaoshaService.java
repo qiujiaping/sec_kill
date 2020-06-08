@@ -5,6 +5,8 @@ import com.qjp.sec_kill.domain.MiaoshaUser;
 import com.qjp.sec_kill.domain.OrderInfo;
 import com.qjp.sec_kill.redis.MiaoshaKey;
 import com.qjp.sec_kill.redis.RedisService;
+import com.qjp.sec_kill.util.MD5Util;
+import com.qjp.sec_kill.util.UUIDUtil;
 import com.qjp.sec_kill.vo.goodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,5 +69,20 @@ public class MiaoshaService {
 
     public void setGoodsOver(Long goodId){
         redisService.set(MiaoshaKey.isGoodsOver,""+goodId,true);
+    }
+
+    public String createMiaoshaPath(MiaoshaUser miaoshaUser, Long id) {
+        if(id <=0) {
+            return null;
+        }
+        //生成随机数并用
+        String str = MD5Util.md5(UUIDUtil.uuid()+"123456");
+        redisService.set(MiaoshaKey.getMiaoshaPath, ""+miaoshaUser.getId() + "_"+ id, str);
+        return str;
+    }
+
+    public boolean checkPath(MiaoshaUser miaoshaUser, Long id, String path) {
+        String pathOld = redisService.get(MiaoshaKey.getMiaoshaPath, "" + miaoshaUser.getId() + "_" + id, String.class);
+        return path.equals(pathOld);
     }
 }

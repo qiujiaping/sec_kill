@@ -2,7 +2,6 @@ package com.qjp.sec_kill.controller;
 
 import com.qjp.sec_kill.domain.MiaoshaOrder;
 import com.qjp.sec_kill.domain.MiaoshaUser;
-
 import com.qjp.sec_kill.rabbitmq.MQsenders;
 import com.qjp.sec_kill.rabbitmq.MiaoshaMessage;
 import com.qjp.sec_kill.redis.GoodsKey;
@@ -17,10 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +41,8 @@ public class miaoshaController implements InitializingBean {
     @Autowired
     MQsenders mQsenders;
     private HashMap<Long, Boolean> localOverMap =  new HashMap<Long, Boolean>();
+
+    //预先把每件商品的库存放到redis当中
     @Override
     public void afterPropertiesSet() throws Exception {
         List<goodsVo> goodsVos = goodsService.listGoodsVo();
@@ -53,11 +51,29 @@ public class miaoshaController implements InitializingBean {
             localOverMap.put(good.getId(), false);
         }
     }
-    @RequestMapping("do_miaosha")
+
+
+    /*返回随机路径秒杀参数，这一步骤是为了防止秒杀接口暴露，以避免复制地址链接在浏览器地址栏反复刷*/
+    @RequestMapping(value = "/path",method = RequestMethod.GET)
     @ResponseBody
-    public Result<Integer> domiaosha(Model model, MiaoshaUser miaoshaUser, @RequestParam("goodsId") Long id){
+    public Result<String> getMiaoshaPath( MiaoshaUser miaoshaUser, @RequestParam("goodsId") Long id) {
+        if (miaoshaUser == null) {//如果用户未登录则到登录页面进行登录
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
+        String path  =miaoshaService.createMiaoshaPath(miaoshaUser, id);
+        return Result.success(path);
+
+    }
+    @RequestMapping(value="/{path}/do_miaosha")
+    @ResponseBody
+    public Result<Integer> domiaosha(Model model, @PathVariable("path") String path,MiaoshaUser miaoshaUser, @RequestParam("goodsId") Long id){
         if(miaoshaUser==null){//如果用户未登录则到登录页面进行登录
             return Result.error(CodeMsg.SESSION_ERROR);
+        }
+        //验证path，防止随机输入path恶意刷秒杀。
+        boolean check = miaoshaService.checkPath(miaoshaUser, id, path);
+        if(!check){
+            return Result.error(CodeMsg.REQUEST_ILLEGAL);
         }
         /*1：请求过来需要预减库存*/
         Long stock = redisService.decr(GoodsKey.getMiaoshaGoodsStock, "" + id);
@@ -118,6 +134,7 @@ public class miaoshaController implements InitializingBean {
 //
 //        return Result.success(orderInfo);
 //    }
+
 
     
 }

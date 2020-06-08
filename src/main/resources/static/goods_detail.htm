@@ -43,7 +43,7 @@
              <span id="miaoshaTip"></span>
          </td>
          <td>
-             <button class="btn btn-primary btn-block" type="button" id="buyButton"onclick="doMiaosha()">立即秒杀</button>
+             <button class="btn btn-primary btn-block" type="button" id="buyButton"onclick="getMiaoshaPath()">立即秒杀</button>
              <input  type="hidden" name="goodsId"  id="goodsId" />
          </td>
      </tr>
@@ -109,9 +109,34 @@
 
     }
 
-    function doMiaosha(){
+    /*这一步骤是为了防止秒杀接口暴露，以避免复制地址链接在浏览器地址栏反复刷*/
+    function getMiaoshaPath(){
+        var goodsId = $("#goodsId").val();
+        g_showLoading();
         $.ajax({
-            url:"/miaosha/do_miaosha",
+            url:"/miaosha/path",
+            type:"GET",
+            data:{
+                goodsId:goodsId
+            },
+            success:function(data){
+                if(data.code == 0){
+                    //这里返回了随机路径参数，直接作为秒杀函数参数，避免秒杀接口暴露
+                    var path = data.data;
+                    doMiaosha(path);
+                }else{
+                    layer.msg(data.msg);
+                }
+            },
+            error:function(){
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
+    function doMiaosha(path){
+        $.ajax({
+            url:"/miaosha/"+path+"/do_miaosha",
             type:"POST",
             data:{
                 goodsId:$("#goodsId").val(),
