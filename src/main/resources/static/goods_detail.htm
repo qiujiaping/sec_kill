@@ -43,8 +43,15 @@
              <span id="miaoshaTip"></span>
          </td>
          <td>
-             <button class="btn btn-primary btn-block" type="button" id="buyButton"onclick="getMiaoshaPath()">立即秒杀</button>
-             <input  type="hidden" name="goodsId"  id="goodsId" />
+             <div class="row">
+                 <div class="form-inline">
+                     <img id="verifyCodeImg" width="80" height="32"  style="display:none" onclick="refreshVerifyCode()"/>
+                     <input id="verifyCode"  class="form-control" style="display:none"/>
+                     <button class="btn btn-primary" type="button" id="buyButton"onclick="getMiaoshaPath()">立即秒杀</button>
+                 </div>
+             </div>
+             <input type="hidden" name="goodsId"  id="goodsId" />
+
          </td>
      </tr>
      <tr>  
@@ -109,7 +116,8 @@
 
     }
 
-    /*这一步骤是为了防止秒杀接口暴露，以避免复制地址链接在浏览器地址栏反复刷*/
+    /*这一步骤是为了防止秒杀接口暴露（生成路径+验证码（还有限流作用）），以避免复制地址链接在浏览器地址栏反复刷（机器人刷），需要保证通过正常页面流程访问*/
+    /*页面渲染的时候已经把验证码生成且把验证码公式结果放到redis当中去了，当点击出发该按钮触发的函数/接口时会校验*/
     function getMiaoshaPath(){
         var goodsId = $("#goodsId").val();
         g_showLoading();
@@ -117,7 +125,8 @@
             url:"/miaosha/path",
             type:"GET",
             data:{
-                goodsId:goodsId
+                goodsId:goodsId,
+                verifyCode:$("#verifyCode").val()
             },
             success:function(data){
                 if(data.code == 0){
@@ -218,10 +227,18 @@
                 clearTimeout(timeout);
             }
             $("#miaoshaTip").html("秒杀进行中");
+            $("#verifyCodeImg").attr("src", "/miaosha/verifyCode?goodsId="+$("#goodsId").val());
+            $("#verifyCodeImg").show();
+            $("#verifyCode").show();
         }else{//秒杀已经结束
             $("#buyButton").attr("disabled", true);
             $("#miaoshaTip").html("秒杀已经结束");
         }
+    }
+
+    /*刷新验证码*/
+    function refreshVerifyCode(){
+        $("#verifyCodeImg").attr("src", "/miaosha/verifyCode?goodsId="+$("#goodsId").val()+"&timestamp="+new Date().getTime());
     }
 </script>
 </html>

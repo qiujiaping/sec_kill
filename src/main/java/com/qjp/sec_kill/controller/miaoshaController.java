@@ -18,6 +18,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,11 +60,19 @@ public class miaoshaController implements InitializingBean {
     /*返回随机路径秒杀参数，这一步骤是为了防止秒杀接口暴露，以避免复制地址链接在浏览器地址栏反复刷*/
     @RequestMapping(value = "/path",method = RequestMethod.GET)
     @ResponseBody
-    public Result<String> getMiaoshaPath( MiaoshaUser miaoshaUser, @RequestParam("goodsId") Long id) {
+    public Result<String> getMiaoshaPath( MiaoshaUser miaoshaUser,
+                                          @RequestParam("goodsId") Long id,
+                                          @RequestParam("verifyCode") int verifyCode )
+    {
         if (miaoshaUser == null) {//如果用户未登录则到登录页面进行登录
             return Result.error(CodeMsg.SESSION_ERROR);
         }
+        boolean check = miaoshaService.checkVerifyCode(miaoshaUser, id, verifyCode);
+        if(!check) {
+            return Result.error(CodeMsg.REQUEST_ILLEGAL);
+        }
         String path  =miaoshaService.createMiaoshaPath(miaoshaUser, id);
+        System.out.println(path);
         return Result.success(path);
 
     }
@@ -91,6 +103,26 @@ public class miaoshaController implements InitializingBean {
         miaoshaMessage.setGoodsId(id);
         mQsenders.sendmiaoshaMessage(miaoshaMessage);
         return Result.success(0);
+    }
+
+    @RequestMapping(value="/verifyCode", method=RequestMethod.GET)
+    @ResponseBody
+    public Result<String> getMiaoshaVerifyCod(HttpServletResponse response, MiaoshaUser user,
+                                              @RequestParam("goodsId")long goodsId) {
+        if(user == null) {
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
+        try {
+            BufferedImage image  = miaoshaService.createVerifyCode(user, goodsId);
+            OutputStream out = response.getOutputStream();
+            ImageIO.write(image, "JPEG", out);
+            out.flush();
+            out.close();
+            return null;
+        }catch(Exception e) {
+            e.printStackTrace();
+            return Result.error(CodeMsg.MIAOSHA_FAIL);
+        }
     }
 
     /**

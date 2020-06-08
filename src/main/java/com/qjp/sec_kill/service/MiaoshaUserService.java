@@ -47,7 +47,7 @@ public class MiaoshaUserService {
         return user;
     }
 
-    //登录
+    //登录（第一次登录成功后先把用户根据id存到redis,以后再登录时直接到缓存中取对象级缓存）
     public boolean login(HttpServletResponse response, LoginVo loginVo) {
         //判断vo是否正常
         if(loginVo==null){
@@ -77,7 +77,7 @@ public class MiaoshaUserService {
         return true;
     }
 
-    //
+    //根据token添加MiaoshaUser
     private void addCookie(HttpServletResponse response,String token,MiaoshaUser user){
         boolean flag = redisService.set(MiaoshaUserKey.token, token, user);// className（MiaoshaUserKey/UserKey）+":" + prefix（tk/id/name）+key/token
         Cookie cookie = new Cookie(COOKI_NAME_TOKEN, token);
