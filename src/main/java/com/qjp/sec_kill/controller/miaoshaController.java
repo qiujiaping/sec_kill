@@ -1,5 +1,6 @@
 package com.qjp.sec_kill.controller;
 
+import com.qjp.sec_kill.access.AccessLimit;
 import com.qjp.sec_kill.domain.MiaoshaOrder;
 import com.qjp.sec_kill.domain.MiaoshaUser;
 import com.qjp.sec_kill.rabbitmq.MQsenders;
@@ -58,11 +59,12 @@ public class miaoshaController implements InitializingBean {
 
 
     /*返回随机路径秒杀参数，这一步骤是为了防止秒杀接口暴露，以避免复制地址链接在浏览器地址栏反复刷*/
+    @AccessLimit(seconds=5, maxCount=5, needLogin=true)
     @RequestMapping(value = "/path",method = RequestMethod.GET)
     @ResponseBody
     public Result<String> getMiaoshaPath( MiaoshaUser miaoshaUser,
                                           @RequestParam("goodsId") Long id,
-                                          @RequestParam("verifyCode") int verifyCode )
+                                          @RequestParam(value="verifyCode", defaultValue="0") int verifyCode )
     {
         if (miaoshaUser == null) {//如果用户未登录则到登录页面进行登录
             return Result.error(CodeMsg.SESSION_ERROR);
@@ -78,7 +80,10 @@ public class miaoshaController implements InitializingBean {
     }
     @RequestMapping(value="/{path}/do_miaosha")
     @ResponseBody
-    public Result<Integer> domiaosha(Model model, @PathVariable("path") String path,MiaoshaUser miaoshaUser, @RequestParam("goodsId") Long id){
+    public Result<Integer> domiaosha(Model model,
+                                     @PathVariable("path") String path,
+                                     MiaoshaUser miaoshaUser,
+                                     @RequestParam("goodsId") Long id){
         if(miaoshaUser==null){//如果用户未登录则到登录页面进行登录
             return Result.error(CodeMsg.SESSION_ERROR);
         }

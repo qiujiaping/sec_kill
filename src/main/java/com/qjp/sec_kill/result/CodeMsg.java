@@ -9,6 +9,7 @@ public class CodeMsg {
     public static CodeMsg SERVER_ERROR = new CodeMsg(500100, "服务端异常");
     public static CodeMsg REQUEST_ILLEGAL=new CodeMsg(500200,"请求非法,你可能是通过在地址栏刷秒杀接口，但随机path变量写错");
     public static CodeMsg MIAOSHA_FAIL=new CodeMsg(500300,"请求失败");
+    public static CodeMsg ACCESS_LIMIT_REACHED= new CodeMsg(500104, "访问太频繁！");
 
 
     //绑定异常的信息类，加了%s是为了与捕获到的异常信息拼装起来

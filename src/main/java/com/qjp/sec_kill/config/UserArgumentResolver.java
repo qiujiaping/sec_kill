@@ -1,6 +1,7 @@
 package com.qjp.sec_kill.config;
 
 
+import com.qjp.sec_kill.access.UserContext;
 import com.qjp.sec_kill.domain.MiaoshaUser;
 import com.qjp.sec_kill.service.MiaoshaUserService;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * description: UserArgumentResolver
+ * description: 最后一次的修改在这里做了简化，把请求放到线程域当中
  * date: 2020/5/19 10:49
  * author: 雨夜微凉
  * version: 1.0
@@ -41,32 +42,8 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-        HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
-        HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
-        String paramToken = request.getParameter(MiaoshaUserService.COOKI_NAME_TOKEN);
-        String cookieToken = getCookieValue(request, MiaoshaUserService.COOKI_NAME_TOKEN);
-        if(StringUtils.isEmpty(paramToken)&&StringUtils.isEmpty(cookieToken)){
-            return null;
-        }
-        String token = StringUtils.isEmpty(paramToken)?cookieToken:paramToken;
-        return miaoshaUserService.getByToken(response, token);
+        MiaoshaUser user = UserContext.getUser();
+        return user;
     }
 
-
-    private String getCookieValue(HttpServletRequest request, String cookiNameToken) {
-        Cookie[] cookies = request.getCookies();
-        //为了在压测工具的测试，不用首先登录（把cookie存放到响应当中），可以直接访问其他页面，设置这个判断
-        if(cookies==null){
-            return null;
-        }
-        for (Cookie cookie:cookies
-             ) {
-            if(cookie.getName().equals(cookiNameToken)){
-                System.out.println(cookie.getValue());
-                return cookie.getValue();
-            }
-
-        }
-        return null;
-    }
 }
