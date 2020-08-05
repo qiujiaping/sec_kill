@@ -38,13 +38,15 @@ public class MiaoshaService {
 
     @Transactional
     public OrderInfo miaosha(MiaoshaUser miaoshaUser, goodsVo goodsVo){
-        //减库存 下订单(写入秒杀订单),返回订单信息
+        //减库存 下订单(写入秒杀订单),返回订单信息,
+        // 解决超卖:描述：比如某商品的库存为1，此时用户1和用户2并发购买该商品，用户1提交订单后该商品的库存被修改为0，而此时用户2并不知道的情况下提交订单，该商品的库存再次被修改为-1，这就是超卖现象
+        //实现：对库存更新时，先对库存判断，只有当库存大于0才能更新库存
         boolean success = goodsService.reduceStock(goodsVo);
         //如果减库存成功则产生订单
         if(success){
             return  orderService.createOrder(miaoshaUser, goodsVo);
         }
-        //否则秒杀失败（库存不足）
+        //否则秒杀失败（库存不足），需要查数据库
         else {
             setGoodsOver(goodsVo.getId());
             return null;
@@ -52,6 +54,7 @@ public class MiaoshaService {
 
     }
 
+    //查看缓存是否存了创建的订单数据
     public long getMIAOSHARESULT(Long useId, Long goodId) {
         MiaoshaOrder miaoshaOrder = orderService.getMiaoshaOrderByUserIdGoodsId(useId, goodId);
         //秒杀成功

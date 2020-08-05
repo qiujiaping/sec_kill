@@ -3,7 +3,7 @@ package com.qjp.sec_kill.domain;
 public class MiaoshaOrder {
 	private Long id;
 	private Long userId;
-	private Long  orderId;
+	private Long  orderId;//通过订单id找到订单信息实体，订单包含货物id，用户id，下单时间，地址，秒杀价格etc
 	private Long goodsId;
 	public Long getId() {
 		return id;

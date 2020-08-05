@@ -12,7 +12,7 @@ public class MiaoshaUser {
     private Long id;    //用户ID，手机号码
     private String nickname;    //昵称
     private String password;    //密码
-    private String salt;        //密码
+    private String salt;        //盐
     private String head;    //头像，云存储的ID
     private Date registerDate; //注册时间
     private Date lastLoginDate;//上次登录时间

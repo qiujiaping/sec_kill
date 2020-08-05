@@ -42,7 +42,8 @@ public class RedisService {
 			 if(str == null || str.length() <= 0) {
 				 return false;
 			 }
-			//生成真正的key   如realKey=keyPrefix.getPrefix()=UserKey+id+key
+			 //UserKey:id1
+			//生成真正的key   如realKey=keyPrefix.getPrefix()="UserKey:id"+key
 			 String realKey  = obj.getPrefix() + key;
 			 int seconds =  obj.expireSeconds();
 			 if(seconds <= 0) {
@@ -116,6 +117,7 @@ public class RedisService {
 			return JSON.toJSONString(value);
 		}
 	}
+
 
 	@SuppressWarnings("unchecked")
 	public static  <T> T stringToBean(String str, Class<T> clazz) {

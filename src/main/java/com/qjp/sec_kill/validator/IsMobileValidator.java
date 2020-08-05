@@ -22,7 +22,7 @@ public class IsMobileValidator implements ConstraintValidator<isMobile, String> 
         required = constraintAnnotation.required();
     }
 
-    //value为住街的属性值
+    //value为注解的属性值
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if(required) {
             return ValidatorUtil.isMobile(value);

@@ -21,8 +21,10 @@ import javax.validation.Valid;
  * author: 雨夜微凉
  * version: 1.0
  */
+
+
 @Controller
-@RequestMapping("/login")
+@RequestMapping("/login")//来到登录页面
 public class LoginController {
 
     private static Logger log = LoggerFactory.getLogger(LoginController.class);
@@ -33,13 +35,14 @@ public class LoginController {
     @Autowired
     MiaoshaUserService userService;
 
+
     @RequestMapping("/to_login")
     public String toLogin(){
         return "login";
     }
 
-    @RequestMapping("/do_login")
-    @ResponseBody
+    @RequestMapping("/do_login")//输入用户名密码后处理登录请求
+    @ResponseBody//loginVo的作用是封装请求参数，并作校验
     public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {//如果这里校验未通过则这里会抛异常
         log.info(loginVo.toString());
         //登录,异常的话把异常交给全局异常处理器，这样写的话就更简洁
@@ -47,6 +50,7 @@ public class LoginController {
         return Result.success(true);
 
     }
+
 
 
 }

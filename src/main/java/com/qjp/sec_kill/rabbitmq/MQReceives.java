@@ -38,16 +38,17 @@ public class MQReceives {
         MiaoshaUser user = miaoshaMessage.getUser();
         long goodsId = miaoshaMessage.getGoodsId();
         goodsVo goods = goodsService.getGoodsVoById(goodsId);
+        //检查库存
         int stockCount = goods.getStockCount();
         if(stockCount<=0){
             return;
         }
-        //判断是否秒杀到（其实可以不判断）
+        //判断是否秒杀到（其实可以不判断,通过redis），在前面已经检查过
         MiaoshaOrder isExist = orderService.getMiaoshaOrderByUserIdGoodsId(user.getId(), goodsId);
         if(isExist!=null){return;}
 
         //真正的秒杀
-        //3，减少库存，下订单，写入秒杀订单
+        //3，减少库存，下订单（更改数据库），写入秒杀订单（写入缓存）
         OrderInfo orderInfo = miaoshaService.miaosha(user, goods);
 
     }

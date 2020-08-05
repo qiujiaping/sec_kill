@@ -9,6 +9,8 @@ import com.qjp.sec_kill.result.CodeMsg;
 import com.qjp.sec_kill.util.MD5Util;
 import com.qjp.sec_kill.util.UUIDUtil;
 import com.qjp.sec_kill.vo.LoginVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,8 @@ public class MiaoshaUserService {
     RedisService redisService;
 
     public static final String COOKI_NAME_TOKEN = "token";
+
+    private static Logger log = LoggerFactory.getLogger(MiaoshaUserService.class);
 
 
     //通过id获得用户（对象级缓存）先从缓存中查若没有，从数据库查，
@@ -56,12 +60,12 @@ public class MiaoshaUserService {
         String mobile = loginVo.getMobile();
         String password1 = loginVo.getPassword();//客户端经一次加密的密码
         //1：通过id获得用户，判断用户是否存在
-        MiaoshaUser user = getById(Long.valueOf(mobile));
+        MiaoshaUser user = getById(Long.valueOf(mobile));//先从redis访问，若redis有直接返回，若无从数据库查找，若有存到redsi，若无返回空
         if(user==null){
             throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);//抛出自定义的全局异常，可被全局异常处理器捕捉
         }
         //2：获得用户密码，验证密码
-        String password2 = user.getPassword();//对第一次加密的密码再经一次加密的密码
+        String password2 = user.getPassword();//对第一次加密的密码再经一次加密的密码（二次加密的密码）
         String salt = user.getSalt();
         String calpass = MD5Util.formPassToDBPass(password1, salt);
 
@@ -71,8 +75,8 @@ public class MiaoshaUserService {
         //3：登录成功后把用户信息添加到缓存，即做类session的操作
 
         //分布式的session:把token信息存到第三方缓存，生成token放到cookie当中
-        String token= UUIDUtil.uuid();//生成cookie
-        System.out.println("token:"+token);
+        String token= UUIDUtil.uuid();//生成cookie，每登录一次则更新一次token存到cookie,时间重新更新
+        log.info("token:"+token);
         addCookie(response,token,user);
         return true;
     }

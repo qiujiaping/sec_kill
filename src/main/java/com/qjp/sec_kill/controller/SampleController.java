@@ -29,6 +29,7 @@ public class SampleController {
     @RequestMapping("/hello")
     @ResponseBody
     public Result<String> home() {
+        System.out.println("Hello，world");
         return Result.success("Hello，world");
     }
 

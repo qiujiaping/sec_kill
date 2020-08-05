@@ -31,6 +31,7 @@ import java.util.List;
  * date: 2020/5/20 0:44
  * author: 雨夜微凉
  * version: 1.0
+ *
  */
 @Controller
 @RequestMapping("/miaosha")
@@ -47,19 +48,20 @@ public class miaoshaController implements InitializingBean {
     MQsenders mQsenders;
     private HashMap<Long, Boolean> localOverMap =  new HashMap<Long, Boolean>();
 
-    //预先把每件商品的库存放到redis当中
+    //一访问这个控制器就预先把每件商品的库存放到redis当中
     @Override
     public void afterPropertiesSet() throws Exception {
         List<goodsVo> goodsVos = goodsService.listGoodsVo();
         for (goodsVo good:goodsVos) {
-            redisService.set(GoodsKey.getMiaoshaGoodsStock, ""+good.getId(), good.getStockCount());
+            redisService.set(GoodsKey.getMiaoshaGoodsStock, ""+good.getId(), good.getStockCount());//设置对应秒杀商品的库存
             localOverMap.put(good.getId(), false);
         }
     }
 
 
     /*返回随机路径秒杀参数，这一步骤是为了防止秒杀接口暴露，以避免复制地址链接在浏览器地址栏反复刷*/
-    @AccessLimit(seconds=5, maxCount=5, needLogin=true)
+    //并对该访问地址作缓存，seconds为地址缓存时间，在缓存时间限制内限制的最大点击次数
+    @AccessLimit(seconds=5, maxCount=5, needLogin=true)//先拦截处理，判断不合拦截，合理放行
     @RequestMapping(value = "/path",method = RequestMethod.GET)
     @ResponseBody
     public Result<String> getMiaoshaPath( MiaoshaUser miaoshaUser,
@@ -73,8 +75,7 @@ public class miaoshaController implements InitializingBean {
         if(!check) {
             return Result.error(CodeMsg.REQUEST_ILLEGAL);
         }
-        String path  =miaoshaService.createMiaoshaPath(miaoshaUser, id);
-        System.out.println(path);
+        String path  =miaoshaService.createMiaoshaPath(miaoshaUser, id);//在redis当中存一份，返回一份。
         return Result.success(path);
 
     }
@@ -92,16 +93,22 @@ public class miaoshaController implements InitializingBean {
         if(!check){
             return Result.error(CodeMsg.REQUEST_ILLEGAL);
         }
-        /*1：请求过来需要预减库存*/
-        Long stock = redisService.decr(GoodsKey.getMiaoshaGoodsStock, "" + id);
-        if(stock<0){//需要特别注意这里是0
-            return Result.error(CodeMsg.MIAO_SHA_OVER);
-        }
+
         //2：判断是否秒杀到，不能重复秒杀
         MiaoshaOrder order = orderService.getMiaoshaOrderByUserIdGoodsId(miaoshaUser.getId(), id);
         if(order != null) {
             return Result.error(CodeMsg.REPEATE_MIAOSHA);
         }
+
+         /*1：请求过来需要预减库存，afterPropertiesSet()
+            该方法已经把货物加载到redis当中
+        */
+        Long stock = redisService.decr(GoodsKey.getMiaoshaGoodsStock, "" + id);
+        if(stock<0){//需要特别注意这里是0
+            return Result.error(CodeMsg.MIAO_SHA_OVER);
+        }
+        //一旦缓存当中的库存小于0了即卖完了，则客户端载点击也不会到这来
+
         //3：入队
         MiaoshaMessage miaoshaMessage = new MiaoshaMessage();
         miaoshaMessage.setUser(miaoshaUser);

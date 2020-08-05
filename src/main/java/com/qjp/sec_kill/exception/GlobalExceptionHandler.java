@@ -37,6 +37,7 @@ public class GlobalExceptionHandler {
             List<ObjectError> errors = ex.getAllErrors();
             //为了简单起见只取第一个，取多少取决于自己的业务需求
             ObjectError error = errors.get(0);
+            //这里看看参数校验错误信息校验器
             String msg = error.getDefaultMessage();
             return Result.error(CodeMsg.BIND_ERROR.fillArgs(msg));
         }else {

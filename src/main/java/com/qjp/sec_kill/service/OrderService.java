@@ -1,5 +1,4 @@
 package com.qjp.sec_kill.service;
-
 import com.qjp.sec_kill.dao.OrderDao;
 import com.qjp.sec_kill.domain.MiaoshaOrder;
 import com.qjp.sec_kill.domain.MiaoshaUser;
@@ -10,7 +9,6 @@ import com.qjp.sec_kill.vo.goodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 
 /**
@@ -50,7 +48,7 @@ public class OrderService {
         orderInfo.setOrderChannel(1);
         orderInfo.setStatus(0);
         orderInfo.setUserId(user.getId());
-        long orderId = orderDao.insertOrderInfo(orderInfo);
+        long orderId = orderDao.insertOrderInfo(orderInfo);//生成订单信息
         MiaoshaOrder miaoshaOrder = new MiaoshaOrder();
         miaoshaOrder.setGoodsId(goods.getId());
         miaoshaOrder.setOrderId(orderInfo.getId());

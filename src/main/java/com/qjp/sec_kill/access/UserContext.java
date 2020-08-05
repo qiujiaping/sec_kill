@@ -10,6 +10,7 @@ import com.qjp.sec_kill.domain.MiaoshaUser;
  */
 
 public class UserContext {
+    //每个线程保存的变量，多线程下不会发生安全问题
     private static ThreadLocal<MiaoshaUser> userHolder = new ThreadLocal<MiaoshaUser>();
 
     public static void setUser(MiaoshaUser user) {
