@@ -16,6 +16,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Method;
 import java.util.Random;
 
 /**
@@ -48,7 +49,8 @@ public class MiaoshaService {
         }
         //否则秒杀失败（库存不足），需要查数据库
         else {
-            setGoodsOver(goodsVo.getId());
+            setGoodsOver(goodsVo.getId());//因为从数据库做了一趟减库存的操作，
+                                            // 一旦没有成功减库存意味着库存不足，则从redis当中设置秒杀结束
             return null;
         }
 
@@ -59,15 +61,15 @@ public class MiaoshaService {
         MiaoshaOrder miaoshaOrder = orderService.getMiaoshaOrderByUserIdGoodsId(useId, goodId);
         //秒杀成功
         if(miaoshaOrder!=null){
-            return miaoshaOrder.getOrderId();
+            return miaoshaOrder.getOrderId();//订单id表示返回成功
         }
         //这里要区分是还在排队还是秒杀失败（库存不足）
         else {
             boolean isover=getGoodsOver(goodId);
             if(isover){
-                return -1;
+                return -1;//-1表示秒杀结束
             }
-            else return 0;
+            else return 0;//0表示还在排队当中
         }
     }
 
@@ -178,4 +180,5 @@ public class MiaoshaService {
         redisService.delete(MiaoshaKey.getMiaoshaVerifyCode, miaoshaUser.getId()+","+id);
          return true;
     }
+
 }

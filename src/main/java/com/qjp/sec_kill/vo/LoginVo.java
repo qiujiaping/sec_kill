@@ -2,7 +2,6 @@ package com.qjp.sec_kill.vo;
 
 import com.qjp.sec_kill.validator.isMobile;
 import org.hibernate.validator.constraints.Length;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -14,7 +13,7 @@ import javax.validation.constraints.NotNull;
 public class LoginVo {
 
     @NotNull
-    @isMobile
+    @isMobile//自己定义的参数校验注解需要指定哪个校验器去校验
     private String mobile;
 
     @NotNull

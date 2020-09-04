@@ -1,5 +1,4 @@
 package com.qjp.sec_kill.access;
-
 import com.alibaba.fastjson.JSON;
 import com.qjp.sec_kill.domain.MiaoshaUser;
 import com.qjp.sec_kill.redis.AccessKey;
@@ -42,7 +41,7 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
             throws Exception {
         if(handler instanceof HandlerMethod) {
             MiaoshaUser user = getUser(request, response);
-            log.info(user.toString());
+           // log.info(user.toString());
             UserContext.setUser(user);
             HandlerMethod hm = (HandlerMethod)handler;
             AccessLimit accessLimit = hm.getMethodAnnotation(AccessLimit.class);

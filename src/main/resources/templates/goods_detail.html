@@ -72,7 +72,7 @@ $(function(){
 });
 
 function countDown(){
-	var remainSeconds = $("#remainSeconds").val();
+	var remainSeconds = $("#remainSeconds").val();//这里从隐藏域拿到数据，避免秒杀正在进行中和已结束当中没有这个数据而取不到
 	var timeout;
 	if(remainSeconds > 0){//秒杀还没开始，倒计时
 		$("#buyButton").attr("disabled", true);

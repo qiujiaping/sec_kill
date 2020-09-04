@@ -54,7 +54,7 @@ public class miaoshaController implements InitializingBean {
         List<goodsVo> goodsVos = goodsService.listGoodsVo();
         for (goodsVo good:goodsVos) {
             redisService.set(GoodsKey.getMiaoshaGoodsStock, ""+good.getId(), good.getStockCount());//设置对应秒杀商品的库存
-            localOverMap.put(good.getId(), false);
+            localOverMap.put(good.getId(), false);//内存标记
         }
     }
 
@@ -68,6 +68,7 @@ public class miaoshaController implements InitializingBean {
                                           @RequestParam("goodsId") Long id,
                                           @RequestParam(value="verifyCode", defaultValue="0") int verifyCode )
     {
+        //验证验证码（和存在redis当中的验证码比较，因为一页面就把验证码存放的redis当中），通过则缓存随机路径并返回
         if (miaoshaUser == null) {//如果用户未登录则到登录页面进行登录
             return Result.error(CodeMsg.SESSION_ERROR);
         }
@@ -103,8 +104,15 @@ public class miaoshaController implements InitializingBean {
          /*1：请求过来需要预减库存，afterPropertiesSet()
             该方法已经把货物加载到redis当中
         */
+        Boolean isOver = localOverMap.get(id);//为进一步优化，减小redis的访问，
+                                                // 首先从内存标记判断，若商品已经结束了，直接返回秒杀结束
+                                                //若没结束则继续执行秒杀
+        if(isOver){
+            return Result.error(CodeMsg.MIAO_SHA_OVER);//若判断库存没有则不继续往下访问redis
+        }
         Long stock = redisService.decr(GoodsKey.getMiaoshaGoodsStock, "" + id);
         if(stock<0){//需要特别注意这里是0
+            localOverMap.put(id, true);//设置商品结束了，以后有请求过来，就会判断结束，不再进行下一步执行
             return Result.error(CodeMsg.MIAO_SHA_OVER);
         }
         //一旦缓存当中的库存小于0了即卖完了，则客户端载点击也不会到这来

@@ -43,14 +43,16 @@ public class LoginController {
 
     @RequestMapping("/do_login")//输入用户名密码后处理登录请求
     @ResponseBody//loginVo的作用是封装请求参数，并作校验
-    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {//如果这里校验未通过则这里会抛异常
+    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {//如果这里校验未通过则这里会抛出参数绑定异常，
+        // 哪个校验出错的参数会通过该参数的注解抛出错误信息
         log.info(loginVo.toString());
         //登录,异常的话把异常交给全局异常处理器，这样写的话就更简洁
-        boolean flag = userService.login(response, loginVo);
+        userService.login(response, loginVo);//如果调用该方法出现异常则在该方法里
+                                            // 面就已经抛出了，能正常执行完这条语句表明是成功了
+                                            //直接返回true就可以
         return Result.success(true);
 
     }
-
 
 
 }

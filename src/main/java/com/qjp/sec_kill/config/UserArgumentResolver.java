@@ -33,7 +33,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         Class<?> clazz = methodParameter.getParameterType();
         String simpleName = clazz.getSimpleName();
         System.out.println("simpleName:"+simpleName);
-        return clazz== MiaoshaUser.class;
+        return clazz== MiaoshaUser.class;//如果支持该参数类型则进行resolveArgument（）处理，否则不进行
     }
 
     @Override

@@ -81,7 +81,7 @@
                 goodsId:$("#goodsId").val(),
             },
             success:function(data){
-                if(data.code == 0){
+                if(data.code == 0){//响应成功，继续判断处于何种状态
                     var result=data.data
                     /*库存不足*/
                     if(result<0){
@@ -97,7 +97,7 @@
                     else {
                         layer.confirm("恭喜你，秒杀成功，查看订单？",{btn:["确定","取消"]},
                         function () {
-                            window.location.href="/order_detail.htm?orderId="+result;
+                            window.location.href="/order_detail.htm?orderId="+result;//到这里了表示result已经是订单的id
                         },
                         function () {
                             layer.closeAll();

@@ -2,7 +2,6 @@ package com.qjp.sec_kill.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import javax.validation.constraints.NotNull;
 import java.lang.annotation.*;
 
 /**
@@ -19,7 +18,7 @@ import java.lang.annotation.*;
         validatedBy = {IsMobileValidator.class}
 )
 public @interface isMobile {
-    String message() default "手机号码格式错误";
+    String message() default "手机号码格式错误";//校验不通过的信息
     Class<?>[] groups() default {};
     boolean required() default true;
 

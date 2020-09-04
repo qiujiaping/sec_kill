@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
             GlobalException ex = (GlobalException)e;
             return Result.error(ex.getCm());
         }
-        //参数绑定异常（例如表单传来的数据和vo的数据没有匹配上）
+        //参数绑定异常（例如表单传来的数据和vo的标准数据格式数据没有匹配上）拦截没有通过校验的参数的绑定异常
         else if(e instanceof BindException) {
             BindException ex = (BindException)e;
             List<ObjectError> errors = ex.getAllErrors();
